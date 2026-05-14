@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAP Concur — Travel & Expense</title>
+<link href="https://fonts.googleapis.com/css2?family=72:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sap-blue: #0070F2;
+  --sap-blue-dark: #0040B0;
+  --sap-blue-hover: #0057C2;
+  --sap-shell: #354A5E;
+  --sap-shell-dark: #233044;
+  --sap-shell-hover: #1D2D3E;
+  --sap-green: #107E3E;
+  --sap-green-light: #E8F5E9;
+  --sap-orange: #E76500;
+  --sap-red: #BB0000;
+  --sap-red-light: #FFEAEA;
+  --sap-gold: #C87400;
+  --sap-purple: #6A2585;
+  --sap-teal: #0E7FA4;
+  --sap-bg: #F5F6F7;
+  --sap-bg-2: #FFFFFF;
+  --sap-border: #D9D9D9;
+  --sap-border-light: #EDEDED;
+  --sap-text: #32363A;
+  --sap-text-muted: #6A6D70;
+  --sap-text-light: #89919A;
+  --sap-tile-h: 160px;
+  --sap-radius: 6px;
+  --sap-shadow: 0 0 0 1px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.08);
+  --sap-shadow-hover: 0 0 0 1px rgba(0,112,242,0.3), 0 4px 16px rgba(0,112,242,0.12);
+  --font: '72', 'SAP 72', -apple-system, 'Segoe UI', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 14px; }
+body { font-family: var(--font); background: var(--sap-bg); color: var(--sap-text); min-height: 100vh; }
+
+/* ── SHELL HEADER ─────────────────────────────────────── */
+.shell-header {
+  height: 44px; background: var(--sap-shell); color: white;
+  display: flex; align-items: center; padding: 0 16px;
+  position: sticky; top: 0; z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+.shell-logo { display: flex; align-items: center; gap: 10px; margin-right: 24px; }
+.shell-logo svg { width: 28px; height: 28px; }
+.shell-logo-text { font-size: 15px; font-weight: 700; color: white; letter-spacing: -0.2px; white-space: nowrap; }
+.shell-logo-sep { width: 1px; height: 22px; background: rgba(255,255,255,0.2); margin: 0 12px; }
+.shell-product { font-size: 13px; color: rgba(255,255,255,0.7); font-weight: 400; }
+.shell-nav { display: flex; align-items: center; gap: 2px; flex: 1; }
+.shell-nav-item {
+  padding: 0 12px; height: 44px; display: flex; align-items: center;
+  font-size: 13px; color: rgba(255,255,255,0.8); cursor: pointer;
+  transition: background 0.15s; position: relative; white-space: nowrap;
+}
+.shell-nav-item:hover { background: var(--sap-shell-hover); color: white; }
+.shell-nav-item.active { color: white; }
+.shell-nav-item.active::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+  background: var(--sap-blue);
+}
+.shell-nav-item .arrow { font-size: 9px; margin-left: 4px; opacity: 0.6; }
+.shell-right { display: flex; align-items: center; gap: 4px; margin-left: auto; }
+.shell-icon-btn {
+  width: 36px; height: 36px; border-radius: 4px; display: flex; align-items: center;
+  justify-content: center; cursor: pointer; color: rgba(255,255,255,0.8);
+  transition: background 0.15s; background: transparent; border: none;
+  position: relative;
+}
+.shell-icon-btn:hover { background: var(--sap-shell-hover); color: white; }
+.notif-badge {
+  position: absolute; top: 4px; right: 4px; width: 16px; height: 16px;
+  background: var(--sap-red); border-radius: 50%; font-size: 9px; font-weight: 700;
+  color: white; display: flex; align-items: center; justify-content: center;
+}
+.shell-avatar {
+  width: 30px; height: 30px; border-radius: 50%; background: var(--sap-blue);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: white; cursor: pointer;
+  margin-left: 4px;
+}
+
+/* ── SECONDARY NAV (Context bar) ──────────────────────── */
+.context-bar {
+  height: 36px; background: white; border-bottom: 1px solid var(--sap-border);
+  display: flex; align-items: center; padding: 0 24px; gap: 0;
+  position: sticky; top: 44px; z-index: 999;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+.ctx-tab {
+  height: 36px; padding: 0 16px; display: flex; align-items: center;
+  font-size: 13px; color: var(--sap-text-muted); cursor: pointer;
+  border-bottom: 2px solid transparent; transition: all 0.15s;
+  white-space: nowrap;
+}
+.ctx-tab:hover { color: var(--sap-text); border-bottom-color: var(--sap-border); }
+.ctx-tab.active { color: var(--sap-blue); border-bottom-color: var(--sap-blue); font-weight: 600; }
+
+/* ── MAIN LAYOUT ──────────────────────────────────────── */
+.main-wrap { max-width: 1440px; margin: 0 auto; padding: 20px 24px 40px; }
+
+/* ── WELCOME BANNER ───────────────────────────────────── */
+.welcome-banner {
+  background: linear-gradient(135deg, #0040B0 0%, #0070F2 50%, #00A4E0 100%);
+  border-radius: 8px; padding: 20px 28px; display: flex; align-items: center;
+  justify-content: space-between; margin-bottom: 20px; color: white;
+  position: relative; overflow: hidden;
+}
+.welcome-banner::before {
+  content: ''; position: absolute; right: -40px; top: -40px;
+  width: 200px; height: 200px; border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+}
+.welcome-banner::after {
+  content: ''; position: absolute; right: 60px; bottom: -60px;
+  width: 160px; height: 160px; border-radius: 50%;
+  background: rgba(255,255,255,0.04);
+}
+.welcome-title { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+.welcome-sub { font-size: 13px; opacity: 0.85; }
+.welcome-actions { display: flex; gap: 10px; z-index: 1; }
+.btn { padding: 8px 20px; border-radius: 4px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; font-family: var(--font); display: flex; align-items: center; gap: 6px; }
+.btn-primary { background: white; color: var(--sap-blue-dark); }
+.btn-primary:hover { background: #F0F6FF; }
+.btn-ghost-white { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.35); }
+.btn-ghost-white:hover { background: rgba(255,255,255,0.25); }
+.btn-blue { background: var(--sap-blue); color: white; }
+.btn-blue:hover { background: var(--sap-blue-hover); }
+.btn-outline { background: white; color: var(--sap-text); border: 1px solid var(--sap-border); }
+.btn-outline:hover { border-color: var(--sap-blue); color: var(--sap-blue); }
+.btn-sm { padding: 5px 14px; font-size: 12px; }
+.btn-danger { background: var(--sap-red); color: white; }
+.btn-success { background: var(--sap-green); color: white; }
+
+/* ── SECTION LAYOUT ───────────────────────────────────── */
+.section-title {
+  font-size: 16px; font-weight: 700; color: var(--sap-text); margin-bottom: 14px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.section-title .view-all { font-size: 13px; font-weight: 400; color: var(--sap-blue); cursor: pointer; }
+.section-title .view-all:hover { text-decoration: underline; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-bottom: 20px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 20px; }
+.grid-main { display: grid; grid-template-columns: 1fr 340px; gap: 20px; margin-bottom: 20px; }
+
+/* ── QUICK ACTION TILES ───────────────────────────────── */
+.quick-tiles { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 24px; }
+.quick-tile {
+  background: white; border-radius: 8px; padding: 20px 18px;
+  box-shadow: var(--sap-shadow); cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; gap: 14px; border: 1px solid var(--sap-border-light);
+}
+.quick-tile:hover { box-shadow: var(--sap-shadow-hover); transform: translateY(-2px); border-color: var(--sap-blue); }
+.qt-icon {
+  width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center;
+  justify-content: center; font-size: 22px; flex-shrink: 0;
+}
+.qt-text .qt-title { font-size: 13.5px; font-weight: 700; color: var(--sap-text); margin-bottom: 2px; }
+.qt-text .qt-sub { font-size: 11px; color: var(--sap-text-muted); }
+
+/* ── CARD ─────────────────────────────────────────────── */
+.card {
+  background: white; border-radius: 8px; border: 1px solid var(--sap-border-light);
+  box-shadow: var(--sap-shadow); overflow: hidden;
+}
+.card-header {
+  padding: 14px 18px; border-bottom: 1px solid var(--sap-border-light);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.card-title { font-size: 14px; font-weight: 700; color: var(--sap-text); display: flex; align-items: center; gap: 8px; }
+.card-body { padding: 16px 18px; }
+.card-footer { padding: 10px 18px; border-top: 1px solid var(--sap-border-light); display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+
+/* ── EXPENSE TABLE ────────────────────────────────────── */
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th {
+  text-align: left; font-size: 11.5px; font-weight: 600; color: var(--sap-text-muted);
+  text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 14px;
+  border-bottom: 2px solid var(--sap-border); background: #FAFAFA;
+}
+.data-table td { padding: 11px 14px; font-size: 13px; border-bottom: 1px solid var(--sap-border-light); }
+.data-table tr:hover td { background: #F5F8FF; }
+.data-table tr:last-child td { border-bottom: none; }
+.status-badge {
+  padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;
+  white-space: nowrap;
+}
+.badge-draft { background: #F0F0F0; color: #666; }
+.badge-pending { background: #FFF3E0; color: #E65100; }
+.badge-approved { background: #E8F5E9; color: #2E7D32; }
+.badge-processing { background: #E3F2FD; color: #1565C0; }
+.badge-paid { background: #E8F5E9; color: #1B5E20; }
+.badge-rejected { background: #FFEBEE; color: #B71C1C; }
+
+/* ── KPI CARDS ────────────────────────────────────────── */
+.kpi-card {
+  background: white; border-radius: 8px; padding: 18px 20px;
+  border: 1px solid var(--sap-border-light); box-shadow: var(--sap-shadow);
+}
+.kpi-val { font-size: 28px; font-weight: 700; color: var(--sap-text); line-height: 1; margin: 6px 0; }
+.kpi-label { font-size: 12px; color: var(--sap-text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.4px; }
+.kpi-change { font-size: 11.5px; margin-top: 4px; }
+.kpi-change.up { color: var(--sap-green); }
+.kpi-change.down { color: var(--sap-red); }
+
+/* ── TIMELINE ─────────────────────────────────────────── */
+.timeline-item {
+  display: flex; gap: 12px; padding: 10px 0;
+  border-bottom: 1px solid var(--sap-border-light);
+}
+.timeline-item:last-child { border-bottom: none; }
+.timeline-dot {
+  width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 16px;
+}
+.tl-title { font-size: 13px; font-weight: 600; color: var(--sap-text); margin-bottom: 2px; }
+.tl-sub { font-size: 11.5px; color: var(--sap-text-muted); }
+.tl-date { font-size: 11px; color: var(--sap-text-light); margin-top: 2px; }
+
+/* ── ALERT BANNER ─────────────────────────────────────── */
+.alert-bar {
+  padding: 10px 16px; border-radius: 6px; display: flex; align-items: center;
+  gap: 10px; font-size: 13px; margin-bottom: 12px;
+}
+.alert-bar.warning { background: #FFF8E1; border-left: 4px solid #F9A825; color: #5D4037; }
+.alert-bar.info { background: #E3F2FD; border-left: 4px solid var(--sap-blue); color: #1A237E; }
+.alert-bar.success { background: #E8F5E9; border-left: 4px solid var(--sap-green); color: #1B5E20; }
+
+/* ── FORM ELEMENTS ────────────────────────────────────── */
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.form-group { display: flex; flex-direction: column; gap: 4px; }
+.form-label { font-size: 12px; font-weight: 600; color: var(--sap-text-muted); }
+.form-input {
+  height: 36px; border: 1px solid var(--sap-border); border-radius: 4px;
+  padding: 0 10px; font-size: 13px; font-family: var(--font);
+  color: var(--sap-text); outline: none; transition: border 0.15s;
+}
+.form-input:focus { border-color: var(--sap-blue); box-shadow: 0 0 0 2px rgba(0,112,242,0.12); }
+select.form-input { cursor: pointer; }
+
+/* ── TRIP CARD ────────────────────────────────────────── */
+.trip-card {
+  background: white; border-radius: 8px; border: 1px solid var(--sap-border-light);
+  box-shadow: var(--sap-shadow); overflow: hidden; cursor: pointer;
+  transition: all 0.2s;
+}
+.trip-card:hover { box-shadow: var(--sap-shadow-hover); transform: translateY(-2px); }
+.trip-card-header { padding: 12px 16px; display: flex; justify-content: space-between; align-items: flex-start; }
+.trip-route { font-size: 15px; font-weight: 700; color: var(--sap-text); }
+.trip-dates { font-size: 11.5px; color: var(--sap-text-muted); margin-top: 2px; }
+.trip-card-body { padding: 0 16px 14px; }
+.trip-detail { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--sap-text-muted); margin-bottom: 4px; }
+.trip-footer { padding: 10px 16px; background: #FAFAFA; border-top: 1px solid var(--sap-border-light); display: flex; justify-content: space-between; align-items: center; }
+.trip-cost { font-size: 14px; font-weight: 700; color: var(--sap-text); }
+
+/* ── PROGRESS BAR ─────────────────────────────────────── */
+.progress-wrap { background: #EBEBEB; border-radius: 4px; height: 6px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+
+/* ── MODAL ────────────────────────────────────────────── */
+.modal-overlay {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(3px); z-index: 2000; align-items: center; justify-content: center;
+}
+.modal-overlay.open { display: flex; animation: fadeIn 0.2s; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.modal {
+  background: white; border-radius: 8px; box-shadow: 0 12px 48px rgba(0,0,0,0.2);
+  width: 620px; max-width: 95vw; max-height: 85vh; overflow-y: auto;
+  animation: slideUp 0.25s ease;
+}
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: none; opacity: 1; } }
+.modal-header { padding: 18px 24px; border-bottom: 1px solid var(--sap-border); display: flex; align-items: center; justify-content: space-between; }
+.modal-title { font-size: 16px; font-weight: 700; }
+.modal-close { width: 28px; height: 28px; border: none; background: none; cursor: pointer; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--sap-text-muted); }
+.modal-close:hover { background: #F0F0F0; }
+.modal-body { padding: 20px 24px; }
+.modal-footer { padding: 14px 24px; border-top: 1px solid var(--sap-border); display: flex; justify-content: flex-end; gap: 10px; }
+
+/* ── TOAST ────────────────────────────────────────────── */
+.toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 3000; display: flex; flex-direction: column; gap: 8px; }
+.toast {
+  background: white; border-radius: 6px; padding: 12px 16px; display: flex; align-items: flex-start; gap: 10px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15); min-width: 280px; max-width: 380px;
+  border-left: 4px solid var(--sap-blue); animation: slideLeft 0.3s ease;
+}
+@keyframes slideLeft { from { transform: translateX(100%); opacity: 0; } to { transform: none; opacity: 1; } }
+.toast.success { border-left-color: var(--sap-green); }
+.toast.error { border-left-color: var(--sap-red); }
+.toast.warning { border-left-color: var(--sap-gold); }
+.toast-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.toast-title { font-size: 13px; font-weight: 700; color: var(--sap-text); }
+.toast-msg { font-size: 12px; color: var(--sap-text-muted); margin-top: 2px; }
+
+/* ── CHART PLACEHOLDER ─────────────────────────────────── */
+.chart-area { position: relative; overflow: hidden; }
+.chart-bars { display: flex; align-items: flex-end; gap: 8px; height: 140px; padding: 0 4px; }
+.chart-bar { flex: 1; border-radius: 4px 4px 0 0; transition: opacity 0.15s; cursor: pointer; }
+.chart-bar:hover { opacity: 0.8; }
+.chart-labels { display: flex; gap: 8px; padding: 6px 4px 0; }
+.chart-label { flex: 1; text-align: center; font-size: 10px; color: var(--sap-text-muted); }
+
+/* ── SEARCH BAR ───────────────────────────────────────── */
+.search-bar {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 4px; padding: 0 10px; height: 32px; cursor: text; margin: 0 16px;
+  transition: all 0.15s; min-width: 200px;
+}
+.search-bar input {
+  border: none; background: transparent; color: white; font-size: 13px;
+  font-family: var(--font); outline: none; width: 100%;
+}
+.search-bar input::placeholder { color: rgba(255,255,255,0.5); }
+.search-bar:hover { background: rgba(255,255,255,0.18); }
+.search-bar:focus-within { background: rgba(255,255,255,0.22); border-color: rgba(255,255,255,0.5); }
+
+/* ── POLICY METER ─────────────────────────────────────── */
+.policy-meter { padding: 12px; background: #FAFAFA; border-radius: 6px; margin-bottom: 10px; border: 1px solid var(--sap-border-light); }
+.policy-label { font-size: 12px; font-weight: 600; color: var(--sap-text-muted); margin-bottom: 6px; display: flex; justify-content: space-between; }
+.compliance-pct { font-size: 14px; font-weight: 700; }
+
+/* ── RECEIPT UPLOAD ───────────────────────────────────── */
+.receipt-drop {
+  border: 2px dashed var(--sap-border); border-radius: 8px; padding: 28px;
+  text-align: center; cursor: pointer; transition: all 0.15s;
+  background: #FAFAFA;
+}
+.receipt-drop:hover { border-color: var(--sap-blue); background: #F0F6FF; }
+.receipt-drop .drop-icon { font-size: 36px; margin-bottom: 8px; }
+.receipt-drop .drop-text { font-size: 13px; color: var(--sap-text-muted); }
+.receipt-drop .drop-link { color: var(--sap-blue); cursor: pointer; }
+
+/* ── CATEGORY CHIPS ───────────────────────────────────── */
+.chip-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+.chip {
+  padding: 4px 12px; border-radius: 20px; font-size: 11.5px; font-weight: 600;
+  cursor: pointer; border: 1px solid var(--sap-border); background: white;
+  color: var(--sap-text-muted); transition: all 0.15s;
+}
+.chip:hover { border-color: var(--sap-blue); color: var(--sap-blue); }
+.chip.active { background: var(--sap-blue); color: white; border-color: var(--sap-blue); }
+
+/* ── PAGE TABS ────────────────────────────────────────── */
+.page-tabs { display: flex; border-bottom: 1px solid var(--sap-border); margin-bottom: 20px; }
+.page-tab {
+  padding: 10px 18px; font-size: 13.5px; font-weight: 500; color: var(--sap-text-muted);
+  cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s;
+  white-space: nowrap;
+}
+.page-tab:hover { color: var(--sap-text); }
+.page-tab.active { color: var(--sap-blue); border-bottom-color: var(--sap-blue); font-weight: 700; }
+
+/* ── SCROLLBAR ────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #CCC; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #AAA; }
+
+/* ── ICONS SVG helpers ─────────────────────────────────── */
+.icon { width: 16px; height: 16px; display: inline-block; vertical-align: middle; }
+</style>
+</head>
+<body>
+
+<!-- ═══ SHELL HEADER ═══════════════════════════════════════════════════ -->
+<header class="shell-header">
+  <div class="shell-logo">
+    <!-- SAP Logo -->
+    <svg viewBox="0 0 29 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="29" height="18" rx="2" fill="white"/>
+      <path d="M2 3.5h5.2l-2 5.8 4.6-5.8h5L10 14.5H7.4l3.8-7.5-5.2 7.5H3.5L5.8 8 2 3.5z" fill="#009DE0"/>
+      <path d="M14 3.5h5.5c2.8 0 4 1.2 3.5 3.2-.4 1.5-1.8 2.5-3.5 2.5H17L16 14.5h-2.5L14 3.5zm2.5 1.8l-.8 2.2h1.8c.9 0 1.5-.5 1.7-1.2.2-.7-.2-1-1-.1z" fill="#003B6F"/>
+      <path d="M23 10.5c-.3 1.2.5 2 1.8 2s2.2-.6 2.4-1.5c.2-.8-.2-1.3-1.5-1.6-1-.3-1-.5-.9-.8.1-.3.5-.5.9-.5.5 0 .8.2.7.7h2c.2-1.1-.6-1.8-2-1.8-1.3 0-2.4.7-2.7 1.8-.3 1 .2 1.5 1.4 1.8 1 .3 1.1.5.9.9-.2.4-.6.6-1.1.6-.6 0-1-.3-.8-.8h-2.1z" fill="#003B6F"/>
+    </svg>
+    <span class="shell-logo-text">Concur</span>
+    <div class="shell-logo-sep"></div>
+    <span class="shell-product">Travel & Expense</span>
+  </div>
+
+  <nav class="shell-nav">
+    <div class="shell-nav-item active" onclick="showTab('home')">Home</div>
+    <div class="shell-nav-item" onclick="showTab('travel')">Travel <span class="arrow">▾</span></div>
+    <div class="shell-nav-item" onclick="showTab('expense')">Expense <span class="arrow">▾</span></div>
+    <div class="shell-nav-item" onclick="showTab('invoice')">Invoice <span class="arrow">▾</span></div>
+    <div class="shell-nav-item" onclick="showTab('requests')">Requests <span class="arrow">▾</span></div>
+    <div class="shell-nav-item" onclick="showTab('reporting')">Reporting <span class="arrow">▾</span></div>
+  </nav>
+
+  <div class="search-bar">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input placeholder="Search..." />
+  </div>
+
+  <div class="shell-right">
+    <button class="shell-icon-btn" onclick="toast('Joule AI','Ask me anything about your travel or expenses!','info')" title="SAP Joule">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><circle cx="9" cy="11" r="1" fill="currentColor"/><circle cx="12" cy="11" r="1" fill="currentColor"/><circle cx="15" cy="11" r="1" fill="currentColor"/></svg>
+    </button>
+    <button class="shell-icon-btn" onclick="openModal('notif')" title="Notifications">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span class="notif-badge">3</span>
+    </button>
+    <button class="shell-icon-btn" title="Help">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    </button>
+    <div class="shell-avatar" onclick="toast('Profile','Eng. Al-Rashidi — BIHG Operations','info')">AR</div>
+  </div>
+</header>
+
+<!-- ═══ CONTEXT BAR ═════════════════════════════════════════════════════ -->
+<div class="context-bar" id="ctx-bar-home">
+  <div class="ctx-tab active" onclick="switchCtx('overview','home')">Overview</div>
+  <div class="ctx-tab" onclick="switchCtx('mytrips','home')">My Trips</div>
+  <div class="ctx-tab" onclick="switchCtx('reports','home')">My Reports</div>
+  <div class="ctx-tab" onclick="switchCtx('alerts','home')">Alerts</div>
+</div>
+
+<!-- ═══ MAIN CONTENT ════════════════════════════════════════════════════ -->
+<div class="main-wrap" id="page-home">
+
+  <!-- Quick Actions -->
+  <div class="quick-tiles">
+    <div class="quick-tile" onclick="openModal('new-report')">
+      <div class="qt-icon" style="background:#E3F2FD">📋</div>
+      <div class="qt-text">
+        <div class="qt-title">New Expense Report</div>
+        <div class="qt-sub">Create & submit expenses</div>
+      </div>
+    </div>
+    <div class="quick-tile" onclick="openModal('book-travel')">
+      <div class="qt-icon" style="background:#E8F5E9">✈️</div>
+      <div class="qt-text">
+        <div class="qt-title">Book Travel</div>
+        <div class="qt-sub">Flights, hotels & cars</div>
+      </div>
+    </div>
+    <div class="quick-tile" onclick="openModal('new-request')">
+      <div class="qt-icon" style="background:#FFF3E0">📝</div>
+      <div class="qt-text">
+        <div class="qt-title">Travel Request</div>
+        <div class="qt-sub">Pre-approval required</div>
+      </div>
+    </div>
+    <div class="quick-tile" onclick="openModal('upload-receipt')">
+      <div class="qt-icon" style="background:#F3E5F5">🧾</div>
+      <div class="qt-text">
+        <div class="qt-title">Upload Receipt</div>
+        <div class="qt-sub">AI-powered extraction</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="grid-4" style="margin-bottom:20px">
+    <div class="kpi-card">
+      <div class="kpi-label">YTD Spend</div>
+      <div class="kpi-val">SAR 84,230</div>
+      <div class="kpi-change up">↑ 12% vs last year</div>
+      <div style="margin-top:10px">
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--sap-text-muted);margin-bottom:4px"><span>Policy limit</span><span>SAR 120,000</span></div>
+        <div class="progress-wrap"><div class="progress-fill" style="width:70%;background:var(--sap-blue)"></div></div>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Pending Reports</div>
+      <div class="kpi-val" style="color:var(--sap-orange)">3</div>
+      <div class="kpi-change" style="color:var(--sap-text-muted)">SAR 12,450 awaiting approval</div>
+      <div style="margin-top:10px;display:flex;gap:8px">
+        <span class="status-badge badge-pending">2 Pending</span>
+        <span class="status-badge badge-draft">1 Draft</span>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Upcoming Trips</div>
+      <div class="kpi-val" style="color:var(--sap-blue)">2</div>
+      <div class="kpi-change" style="color:var(--sap-text-muted)">Next: Riyadh, 20 May 2026</div>
+      <div style="margin-top:10px">
+        <span class="status-badge badge-approved">Pre-Approved</span>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Policy Compliance</div>
+      <div class="kpi-val" style="color:var(--sap-green)">94%</div>
+      <div class="kpi-change up">↑ 3pp vs last quarter</div>
+      <div style="margin-top:10px">
+        <div class="progress-wrap"><div class="progress-fill" style="width:94%;background:var(--sap-green)"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-main">
+    <!-- LEFT: Expense Reports + Trips -->
+    <div style="display:flex;flex-direction:column;gap:18px">
+
+      <!-- Pending Approvals Alert -->
+      <div class="alert-bar warning">
+        <span>⚠️</span>
+        <div>
+          <strong>2 expense reports need your approval.</strong>
+          Reports from Khalid Al-Mutairi and Sara Al-Ghamdi are pending.
+          <span style="color:var(--sap-blue);cursor:pointer;margin-left:6px;font-weight:600" onclick="openModal('approvals')">Review Now →</span>
+        </div>
+      </div>
+
+      <!-- My Expense Reports -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0070F2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            My Expense Reports
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-sm btn-outline" onclick="openModal('new-report')">+ New Report</button>
+          </div>
+        </div>
+        <div style="padding:0">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Report Name</th>
+                <th>Dates</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr onclick="openModal('report-detail')">
+                <td>
+                  <div style="font-weight:600">Riyadh Site Visit — May 2026</div>
+                  <div style="font-size:11px;color:var(--sap-text-muted)">7 expenses · REP-2026-0084</div>
+                </td>
+                <td>2–5 May 2026</td>
+                <td style="font-weight:700">SAR 4,280</td>
+                <td><span class="status-badge badge-pending">Pending Approval</span></td>
+                <td><button class="btn btn-sm btn-outline" onclick="event.stopPropagation();openModal('report-detail')">View</button></td>
+              </tr>
+              <tr onclick="openModal('report-detail')">
+                <td>
+                  <div style="font-weight:600">KAFD Site Inspection — April 2026</div>
+                  <div style="font-size:11px;color:var(--sap-text-muted)">12 expenses · REP-2026-0071</div>
+                </td>
+                <td>14–18 Apr 2026</td>
+                <td style="font-weight:700">SAR 8,140</td>
+                <td><span class="status-badge badge-approved">Approved</span></td>
+                <td><button class="btn btn-sm btn-outline" onclick="event.stopPropagation()">PDF</button></td>
+              </tr>
+              <tr>
+                <td>
+                  <div style="font-weight:600">March 2026 General Expenses</div>
+                  <div style="font-size:11px;color:var(--sap-text-muted)">4 expenses · REP-2026-0058</div>
+                </td>
+                <td>Mar 2026</td>
+                <td style="font-weight:700">SAR 1,640</td>
+                <td><span class="status-badge badge-draft">Draft</span></td>
+                <td><button class="btn btn-sm btn-blue btn-sm" onclick="toast('Report','Expense report submitted successfully!','success')">Submit</button></td>
+              </tr>
+              <tr>
+                <td>
+                  <div style="font-weight:600">Jeddah Tower Site — Feb 2026</div>
+                  <div style="font-size:11px;color:var(--sap-text-muted)">9 expenses · REP-2026-0042</div>
+                </td>
+                <td>10–12 Feb 2026</td>
+                <td style="font-weight:700">SAR 6,720</td>
+                <td><span class="status-badge badge-paid">Paid</span></td>
+                <td><button class="btn btn-sm btn-outline">Archive</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Upcoming Trips -->
+      <div>
+        <div class="section-title">
+          Upcoming Trips
+          <span class="view-all" onclick="showTab('travel')">View All Trips →</span>
+        </div>
+        <div class="grid-2">
+          <div class="trip-card" onclick="openModal('trip-detail')">
+            <div class="trip-card-header">
+              <div>
+                <div class="trip-route">✈️ JED → RUH</div>
+                <div class="trip-dates">20–22 May 2026 · Round Trip</div>
+              </div>
+              <span class="status-badge badge-approved">Confirmed</span>
+            </div>
+            <div class="trip-card-body">
+              <div class="trip-detail">🏨 Grand Hyatt Riyadh · 2 nights</div>
+              <div class="trip-detail">🚗 Hertz rental · Economy</div>
+              <div class="trip-detail">📋 KAFD Project Review Meeting</div>
+            </div>
+            <div class="trip-footer">
+              <div class="trip-cost">SAR 2,840</div>
+              <button class="btn btn-sm btn-outline" onclick="event.stopPropagation();openModal('trip-detail')">Itinerary</button>
+            </div>
+          </div>
+          <div class="trip-card" onclick="openModal('trip-detail')">
+            <div class="trip-card-header">
+              <div>
+                <div class="trip-route">✈️ JED → MKX</div>
+                <div class="trip-dates">28–30 May 2026 · Round Trip</div>
+              </div>
+              <span class="status-badge badge-pending">Pending</span>
+            </div>
+            <div class="trip-card-body">
+              <div class="trip-detail">🏨 Makkah Clock Tower Hotel · 2 nights</div>
+              <div class="trip-detail">🚗 Transfer included</div>
+              <div class="trip-detail">📋 Haram Expansion Inspection</div>
+            </div>
+            <div class="trip-footer">
+              <div class="trip-cost">SAR 1,960</div>
+              <button class="btn btn-sm btn-outline" onclick="event.stopPropagation()">Details</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Spend by Category Chart -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📊 Spend by Category — 2026 YTD</div>
+          <div style="display:flex;gap:6px">
+            <div class="chip active">All</div>
+            <div class="chip" onclick="this.parentNode.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));this.classList.add('active')">Q1</div>
+            <div class="chip" onclick="this.parentNode.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));this.classList.add('active')">Q2</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="chart-area">
+            <div class="chart-bars">
+              <div class="chart-bar" style="height:90%;background:var(--sap-blue);opacity:0.85" title="Hotels: SAR 32,400"></div>
+              <div class="chart-bar" style="height:75%;background:var(--sap-teal)" title="Flights: SAR 27,200"></div>
+              <div class="chart-bar" style="height:40%;background:var(--sap-green)" title="Meals: SAR 14,800"></div>
+              <div class="chart-bar" style="height:28%;background:var(--sap-gold)" title="Car Rental: SAR 10,100"></div>
+              <div class="chart-bar" style="height:20%;background:var(--sap-purple)" title="Taxi/Transfer: SAR 7,200"></div>
+              <div class="chart-bar" style="height:12%;background:var(--sap-orange)" title="Other: SAR 4,530"></div>
+            </div>
+            <div class="chart-labels">
+              <div class="chart-label">Hotels</div>
+              <div class="chart-label">Flights</div>
+              <div class="chart-label">Meals</div>
+              <div class="chart-label">Car Rental</div>
+              <div class="chart-label">Taxi</div>
+              <div class="chart-label">Other</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Sidebar -->
+    <div style="display:flex;flex-direction:column;gap:16px">
+
+      <!-- AI Joule Assistant -->
+      <div class="card" style="background:linear-gradient(135deg,#003B8E,#0070F2);color:white;border:none">
+        <div class="card-body" style="padding:18px">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+            <div style="width:36px;height:36px;background:rgba(255,255,255,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px">🤖</div>
+            <div>
+              <div style="font-size:14px;font-weight:700">SAP Joule</div>
+              <div style="font-size:11px;opacity:0.75">AI-powered assistant</div>
+            </div>
+          </div>
+          <div style="font-size:12.5px;opacity:0.9;line-height:1.6;margin-bottom:14px">
+            Hi Eng. Al-Rashidi! I've detected <strong>3 receipts</strong> in your email ready to import. Also, your Riyadh trip report is due in <strong>2 days</strong>.
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <button class="btn btn-ghost-white btn-sm" onclick="toast('Joule','Importing 3 receipts from your email...','success')" style="justify-content:flex-start">📧 Import receipts from email</button>
+            <button class="btn btn-ghost-white btn-sm" onclick="toast('Joule','Opening Riyadh trip expense report...','info')" style="justify-content:flex-start">📋 Complete Riyadh report</button>
+            <button class="btn btn-ghost-white btn-sm" onclick="openModal('book-travel')" style="justify-content:flex-start">✈️ Book next trip</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Approvals Needed -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">⏳ Needs Approval</div>
+          <span class="status-badge badge-pending">2</span>
+        </div>
+        <div style="padding:4px 0">
+          <div class="timeline-item" style="padding:12px 16px;cursor:pointer" onclick="openModal('approvals')">
+            <div class="timeline-dot" style="background:#FFF3E0">👤</div>
+            <div style="flex:1">
+              <div class="tl-title">Khalid Al-Mutairi</div>
+              <div class="tl-sub">KAFD Site Visit · SAR 3,200</div>
+              <div class="tl-date">Submitted 2 hours ago</div>
+            </div>
+            <button class="btn btn-sm btn-success" onclick="event.stopPropagation();toast('Approved','Report approved and notified.','success')">✓</button>
+          </div>
+          <div class="timeline-item" style="padding:12px 16px;cursor:pointer;border-bottom:none" onclick="openModal('approvals')">
+            <div class="timeline-dot" style="background:#E3F2FD">👤</div>
+            <div style="flex:1">
+              <div class="tl-title">Sara Al-Ghamdi</div>
+              <div class="tl-sub">Haram Site Travel · SAR 4,850</div>
+              <div class="tl-date">Submitted yesterday</div>
+            </div>
+            <button class="btn btn-sm btn-success" onclick="event.stopPropagation();toast('Approved','Report approved and notified.','success')">✓</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Receipts -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🧾 Recent Receipts</div>
+          <button class="btn btn-sm btn-outline" onclick="openModal('upload-receipt')">+ Add</button>
+        </div>
+        <div style="padding:0">
+          <div class="timeline-item" style="padding:10px 16px">
+            <div class="timeline-dot" style="background:#E3F2FD;font-size:14px">🏨</div>
+            <div style="flex:1">
+              <div class="tl-title">Grand Hyatt Jeddah</div>
+              <div class="tl-sub">Hotel · 2 nights</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-weight:700;font-size:13px">SAR 1,840</div>
+              <span class="status-badge badge-processing" style="font-size:10px">AI Processing</span>
+            </div>
+          </div>
+          <div class="timeline-item" style="padding:10px 16px">
+            <div class="timeline-dot" style="background:#E8F5E9;font-size:14px">🍽️</div>
+            <div style="flex:1">
+              <div class="tl-title">Restaurant Fakieh</div>
+              <div class="tl-sub">Meal · Business Dinner</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-weight:700;font-size:13px">SAR 380</div>
+              <span class="status-badge badge-approved" style="font-size:10px">Matched</span>
+            </div>
+          </div>
+          <div class="timeline-item" style="padding:10px 16px;border-bottom:none">
+            <div class="timeline-dot" style="background:#FFF3E0;font-size:14px">🚕</div>
+            <div style="flex:1">
+              <div class="tl-title">Careem Business</div>
+              <div class="tl-sub">Transportation</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-weight:700;font-size:13px">SAR 95</div>
+              <span class="status-badge badge-approved" style="font-size:10px">Matched</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Policy Compliance -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🛡️ Policy Compliance</div>
+        </div>
+        <div class="card-body">
+          <div class="policy-meter">
+            <div class="policy-label"><span>Hotel Rate Compliance</span><span class="compliance-pct" style="color:var(--sap-green)">100%</span></div>
+            <div class="progress-wrap"><div class="progress-fill" style="width:100%;background:var(--sap-green)"></div></div>
+          </div>
+          <div class="policy-meter">
+            <div class="policy-label"><span>Meal Allowance</span><span class="compliance-pct" style="color:var(--sap-green)">92%</span></div>
+            <div class="progress-wrap"><div class="progress-fill" style="width:92%;background:var(--sap-green)"></div></div>
+          </div>
+          <div class="policy-meter">
+            <div class="policy-label"><span>Advance Booking</span><span class="compliance-pct" style="color:var(--sap-orange)">76%</span></div>
+            <div class="progress-wrap"><div class="progress-fill" style="width:76%;background:var(--sap-orange)"></div></div>
+          </div>
+          <div class="policy-meter" style="margin-bottom:0;border:none;background:transparent;padding:12px 0 0">
+            <div class="policy-label"><span>Receipt Attachment</span><span class="compliance-pct" style="color:var(--sap-green)">100%</span></div>
+            <div class="progress-wrap"><div class="progress-fill" style="width:100%;background:var(--sap-green)"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODALS ════════════════════════════════════════════════════════════ -->
+
+<!-- New Expense Report -->
+<div class="modal-overlay" id="modal-new-report">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Create New Expense Report</div>
+      <button class="modal-close" onclick="closeModal('new-report')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="alert-bar info" style="margin-bottom:16px">
+        <span>💡</span> Joule will automatically import matching receipts from your email and card transactions.
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Report Name *</label>
+          <input class="form-input" type="text" placeholder="e.g. Riyadh Business Trip — May 2026" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Policy</label>
+          <select class="form-input">
+            <option>BIHG Standard Travel Policy</option>
+            <option>BIHG Executive Travel Policy</option>
+            <option>Site Visit Policy</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Start Date *</label>
+          <input class="form-input" type="date" value="2026-05-14" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">End Date *</label>
+          <input class="form-input" type="date" value="2026-05-16" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Business Purpose *</label>
+          <input class="form-input" type="text" placeholder="e.g. Site inspection — KAFD Phase 4" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Cost Center</label>
+          <select class="form-input">
+            <option>CC-KAFD-4100 — KAFD Phase 4</option>
+            <option>CC-HARAM-1000 — Haram Expansion</option>
+            <option>CC-AIRPORT-2200 — Airport Project</option>
+            <option>CC-HQ-0001 — Headquarters</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:14px">
+        <label class="form-label">Currency</label>
+        <select class="form-input" style="width:50%">
+          <option>SAR — Saudi Riyal</option>
+          <option>USD — US Dollar</option>
+          <option>EUR — Euro</option>
+          <option>AED — UAE Dirham</option>
+        </select>
+      </div>
+      <div class="receipt-drop" onclick="toast('Receipt','AI scanning your receipts...','info')">
+        <div class="drop-icon">📎</div>
+        <div class="drop-text">Drag & drop receipts here or <span class="drop-link">browse files</span></div>
+        <div style="font-size:11px;color:var(--sap-text-light);margin-top:4px">JPEG, PNG, PDF supported · AI extracts data automatically</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('new-report')">Cancel</button>
+      <button class="btn btn-outline" onclick="toast('Draft','Report saved as draft.','info');closeModal('new-report')">Save as Draft</button>
+      <button class="btn btn-blue" onclick="toast('Created','Expense report created successfully!','success');closeModal('new-report')">Create Report</button>
+    </div>
+  </div>
+</div>
+
+<!-- Book Travel -->
+<div class="modal-overlay" id="modal-book-travel">
+  <div class="modal" style="width:700px">
+    <div class="modal-header">
+      <div class="modal-title">✈️ Book Business Travel</div>
+      <button class="modal-close" onclick="closeModal('book-travel')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="page-tabs" style="margin-bottom:16px">
+        <div class="page-tab active">✈️ Flight</div>
+        <div class="page-tab">🏨 Hotel</div>
+        <div class="page-tab">🚗 Car Rental</div>
+        <div class="page-tab">🚂 Rail</div>
+      </div>
+      <div class="chip-row">
+        <div class="chip active">Round Trip</div>
+        <div class="chip" onclick="this.parentNode.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));this.classList.add('active')">One Way</div>
+        <div class="chip" onclick="this.parentNode.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));this.classList.add('active')">Multi-City</div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">From</label>
+          <input class="form-input" type="text" value="Jeddah (JED)" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">To</label>
+          <input class="form-input" type="text" placeholder="Destination city or airport" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Departure</label>
+          <input class="form-input" type="date" value="2026-05-20" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Return</label>
+          <input class="form-input" type="date" value="2026-05-22" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Passengers</label>
+          <select class="form-input"><option>1 Adult</option><option>2 Adults</option></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Cabin Class</label>
+          <select class="form-input"><option>Economy (Policy)</option><option>Business (Approval Required)</option></select>
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:14px">
+        <label class="form-label">Trip Purpose (for pre-approval)</label>
+        <input class="form-input" type="text" placeholder="e.g. Client meeting — KAFD Phase 4 review" />
+      </div>
+      <div class="alert-bar success">
+        <span>✅</span>
+        This trip matches an <strong>active travel request</strong> (TR-2026-0041). Booking will be auto-linked.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('book-travel')">Cancel</button>
+      <button class="btn btn-blue" onclick="toast('Searching','Finding best policy-compliant flights...','info');closeModal('book-travel')">Search Flights</button>
+    </div>
+  </div>
+</div>
+
+<!-- Report Detail -->
+<div class="modal-overlay" id="modal-report-detail">
+  <div class="modal" style="width:680px">
+    <div class="modal-header">
+      <div class="modal-title">REP-2026-0084 — Riyadh Site Visit</div>
+      <button class="modal-close" onclick="closeModal('report-detail')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:18px">
+        <div class="kpi-card" style="padding:12px">
+          <div class="kpi-label">Total</div>
+          <div style="font-size:20px;font-weight:700;color:var(--sap-text)">SAR 4,280</div>
+        </div>
+        <div class="kpi-card" style="padding:12px">
+          <div class="kpi-label">Expenses</div>
+          <div style="font-size:20px;font-weight:700;color:var(--sap-blue)">7</div>
+        </div>
+        <div class="kpi-card" style="padding:12px">
+          <div class="kpi-label">Status</div>
+          <div style="margin-top:6px"><span class="status-badge badge-pending">Pending Approval</span></div>
+        </div>
+      </div>
+      <table class="data-table">
+        <thead><tr><th>Date</th><th>Category</th><th>Description</th><th>Amount</th><th>Receipt</th></tr></thead>
+        <tbody>
+          <tr><td>2 May</td><td>✈️ Flight</td><td>JED→RUH · Saudia Economy</td><td style="font-weight:700">SAR 980</td><td>✅</td></tr>
+          <tr><td>2 May</td><td>🏨 Hotel</td><td>Marriott Riyadh · 2 nights</td><td style="font-weight:700">SAR 1,640</td><td>✅</td></tr>
+          <tr><td>3 May</td><td>🍽️ Meal</td><td>Business lunch · Al Orjouan</td><td style="font-weight:700">SAR 420</td><td>✅</td></tr>
+          <tr><td>3 May</td><td>🚕 Transport</td><td>Airport transfer · Careem</td><td style="font-weight:700">SAR 120</td><td>✅</td></tr>
+          <tr><td>4 May</td><td>🍽️ Meal</td><td>Team dinner · 7 people</td><td style="font-weight:700">SAR 840</td><td>✅</td></tr>
+          <tr><td>5 May</td><td>📄 Other</td><td>Printing & business materials</td><td style="font-weight:700">SAR 180</td><td>✅</td></tr>
+          <tr><td>5 May</td><td>✈️ Flight</td><td>RUH→JED · Saudia Economy</td><td style="font-weight:700">SAR 100</td><td>✅</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('report-detail')">Close</button>
+      <button class="btn btn-outline" onclick="toast('PDF','Generating PDF report...','info')">Download PDF</button>
+      <button class="btn btn-danger btn-sm" onclick="toast('Recalled','Report recalled for editing.','warning');closeModal('report-detail')">Recall</button>
+    </div>
+  </div>
+</div>
+
+<!-- Trip Detail -->
+<div class="modal-overlay" id="modal-trip-detail">
+  <div class="modal" style="width:600px">
+    <div class="modal-header">
+      <div class="modal-title">✈️ Riyadh — 20–22 May 2026</div>
+      <button class="modal-close" onclick="closeModal('trip-detail')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="alert-bar success" style="margin-bottom:16px"><span>✅</span> All bookings confirmed. Itinerary sent to your email.</div>
+      <div class="timeline-item" style="padding:12px 0">
+        <div class="timeline-dot" style="background:#E3F2FD">✈️</div>
+        <div>
+          <div class="tl-title">Saudia SV502 · JED → RUH</div>
+          <div class="tl-sub">Wed 20 May · 06:00 – 08:10 · Economy</div>
+          <div style="font-size:11px;color:var(--sap-blue);margin-top:2px">Seat 18C · PNR: BXQT72</div>
+        </div>
+        <div style="font-weight:700;font-size:13px">SAR 680</div>
+      </div>
+      <div class="timeline-item" style="padding:12px 0">
+        <div class="timeline-dot" style="background:#E8F5E9">🏨</div>
+        <div>
+          <div class="tl-title">Grand Hyatt Riyadh</div>
+          <div class="tl-sub">2 nights · Check-in 20 May · Check-out 22 May</div>
+          <div style="font-size:11px;color:var(--sap-blue);margin-top:2px">Deluxe King · Confirmation: GH-284710</div>
+        </div>
+        <div style="font-weight:700;font-size:13px">SAR 1,840</div>
+      </div>
+      <div class="timeline-item" style="padding:12px 0">
+        <div class="timeline-dot" style="background:#FFF3E0">🚗</div>
+        <div>
+          <div class="tl-title">Hertz Car Rental</div>
+          <div class="tl-sub">Economy · 2 days · Pickup King Khalid Airport</div>
+          <div style="font-size:11px;color:var(--sap-blue);margin-top:2px">Confirmation: HR-509284</div>
+        </div>
+        <div style="font-weight:700;font-size:13px">SAR 320</div>
+      </div>
+      <div class="timeline-item" style="padding:12px 0;border-bottom:none">
+        <div class="timeline-dot" style="background:#E3F2FD">✈️</div>
+        <div>
+          <div class="tl-title">Saudia SV511 · RUH → JED</div>
+          <div class="tl-sub">Fri 22 May · 18:30 – 20:40 · Economy</div>
+          <div style="font-size:11px;color:var(--sap-blue);margin-top:2px">Seat 22A · PNR: BXQT73</div>
+        </div>
+        <div style="font-weight:700;font-size:13px">SAR 0</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('trip-detail')">Close</button>
+      <button class="btn btn-outline" onclick="toast('Itinerary','Itinerary sent to your email.','success')">Email Itinerary</button>
+      <button class="btn btn-blue" onclick="openModal('new-report');closeModal('trip-detail')">Create Expense Report</button>
+    </div>
+  </div>
+</div>
+
+<!-- Approvals -->
+<div class="modal-overlay" id="modal-approvals">
+  <div class="modal" style="width:660px">
+    <div class="modal-header">
+      <div class="modal-title">⏳ Expense Reports Awaiting Approval</div>
+      <button class="modal-close" onclick="closeModal('approvals')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="card" style="border-left:4px solid var(--sap-orange)">
+          <div class="card-body">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+              <div>
+                <div style="font-weight:700;font-size:14px">Khalid Al-Mutairi — KAFD Site Visit</div>
+                <div style="font-size:12px;color:var(--sap-text-muted);margin-top:2px">REP-2026-0083 · 5 expenses · 2 hours ago</div>
+              </div>
+              <div style="font-size:18px;font-weight:700;color:var(--sap-text)">SAR 3,200</div>
+            </div>
+            <div style="font-size:12px;color:var(--sap-text-muted);margin-bottom:12px">Hotel · Flights · Meals · Transportation · All receipts attached</div>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-success btn-sm" onclick="toast('Approved','Khalid Al-Mutairi report approved.','success');closeModal('approvals')">✓ Approve</button>
+              <button class="btn btn-outline btn-sm">Send Back</button>
+              <button class="btn btn-outline btn-sm">View Details</button>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="border-left:4px solid var(--sap-orange)">
+          <div class="card-body">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+              <div>
+                <div style="font-weight:700;font-size:14px">Sara Al-Ghamdi — Haram Site Travel</div>
+                <div style="font-size:12px;color:var(--sap-text-muted);margin-top:2px">REP-2026-0079 · 8 expenses · Yesterday</div>
+              </div>
+              <div style="font-size:18px;font-weight:700;color:var(--sap-text)">SAR 4,850</div>
+            </div>
+            <div style="font-size:12px;color:var(--sap-text-muted);margin-bottom:12px">Hotel · Flights · Meals · Business entertainment · All receipts attached</div>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-success btn-sm" onclick="toast('Approved','Sara Al-Ghamdi report approved.','success');closeModal('approvals')">✓ Approve</button>
+              <button class="btn btn-outline btn-sm">Send Back</button>
+              <button class="btn btn-outline btn-sm">View Details</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('approvals')">Close</button>
+      <button class="btn btn-blue" onclick="toast('Approved','All reports approved!','success');closeModal('approvals')">Approve All</button>
+    </div>
+  </div>
+</div>
+
+<!-- Upload Receipt -->
+<div class="modal-overlay" id="modal-upload-receipt">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">🧾 Upload & Scan Receipt</div>
+      <button class="modal-close" onclick="closeModal('upload-receipt')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="receipt-drop" onclick="toast('AI','SAP Joule is scanning your receipt...','info')" style="margin-bottom:16px">
+        <div class="drop-icon">📸</div>
+        <div class="drop-text">Drop receipt here or <span class="drop-link">tap to scan</span></div>
+        <div style="font-size:11px;color:var(--sap-text-light);margin-top:6px">AI extracts: date, merchant, amount, category</div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Expense Type</label>
+          <select class="form-input">
+            <option>Hotel</option><option>Flight</option><option>Meal</option>
+            <option>Transportation</option><option>Entertainment</option><option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Amount</label>
+          <input class="form-input" type="number" placeholder="0.00" />
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:14px">
+        <label class="form-label">Link to Report</label>
+        <select class="form-input">
+          <option>Riyadh Site Visit — May 2026 (Draft)</option>
+          <option>New Report</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('upload-receipt')">Cancel</button>
+      <button class="btn btn-blue" onclick="toast('Receipt','Receipt uploaded & AI processing started!','success');closeModal('upload-receipt')">Upload & Process</button>
+    </div>
+  </div>
+</div>
+
+<!-- New Request -->
+<div class="modal-overlay" id="modal-new-request">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">📝 New Travel Request</div>
+      <button class="modal-close" onclick="closeModal('new-request')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="alert-bar info" style="margin-bottom:14px"><span>ℹ️</span> Travel requests require manager pre-approval before booking.</div>
+      <div class="form-group" style="margin-bottom:14px">
+        <label class="form-label">Trip Purpose *</label>
+        <input class="form-input" type="text" placeholder="e.g. Site inspection — Jeddah Tower" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Departure Date</label>
+          <input class="form-input" type="date" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Return Date</label>
+          <input class="form-input" type="date" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Destination</label>
+          <input class="form-input" type="text" placeholder="City / Country" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Estimated Budget</label>
+          <input class="form-input" type="text" placeholder="SAR" />
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('new-request')">Cancel</button>
+      <button class="btn btn-blue" onclick="toast('Submitted','Travel request submitted for approval!','success');closeModal('new-request')">Submit for Approval</button>
+    </div>
+  </div>
+</div>
+
+<!-- Notifications -->
+<div class="modal-overlay" id="modal-notif">
+  <div class="modal" style="width:440px">
+    <div class="modal-header">
+      <div class="modal-title">🔔 Notifications</div>
+      <button class="modal-close" onclick="closeModal('notif')">✕</button>
+    </div>
+    <div class="modal-body" style="padding:0">
+      <div class="timeline-item" style="padding:14px 18px">
+        <div class="timeline-dot" style="background:#E3F2FD;font-size:16px">📋</div>
+        <div>
+          <div class="tl-title">Report Approved — KAFD April Visit</div>
+          <div class="tl-sub">Your expense report SAR 8,140 was approved by Manager</div>
+          <div class="tl-date">30 minutes ago</div>
+        </div>
+      </div>
+      <div class="timeline-item" style="padding:14px 18px">
+        <div class="timeline-dot" style="background:#FFF3E0;font-size:16px">⏰</div>
+        <div>
+          <div class="tl-title">Expense Report Due</div>
+          <div class="tl-sub">Riyadh Site Visit report is due in 2 days</div>
+          <div class="tl-date">2 hours ago</div>
+        </div>
+      </div>
+      <div class="timeline-item" style="padding:14px 18px;border-bottom:none">
+        <div class="timeline-dot" style="background:#E8F5E9;font-size:16px">✈️</div>
+        <div>
+          <div class="tl-title">Flight Confirmed</div>
+          <div class="tl-sub">Saudia SV502 JED→RUH on 20 May confirmed</div>
+          <div class="tl-date">Yesterday</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeModal('notif')">Mark All Read</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TOAST CONTAINER ══════════════════════════════════════════════════ -->
+<div class="toast-container" id="toasts"></div>
+
+<script>
+// ── MODAL SYSTEM ──────────────────────────────────────────────
+function openModal(id) {
+  document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('open'));
+  const m = document.getElementById('modal-' + id);
+  if (m) m.classList.add('open');
+}
+function closeModal(id) {
+  const m = document.getElementById('modal-' + id);
+  if (m) m.classList.remove('open');
+}
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+
+// ── TOAST SYSTEM ──────────────────────────────────────────────
+let toastId = 0;
+function toast(title, msg, type = 'info') {
+  const icons = { info: 'ℹ️', success: '✅', error: '❌', warning: '⚠️' };
+  const id = ++toastId;
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.id = 'toast-' + id;
+  el.innerHTML = `<span class="toast-icon">${icons[type]||'ℹ️'}</span><div><div class="toast-title">${title}</div><div class="toast-msg">${msg}</div></div>`;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(() => { const t = document.getElementById('toast-'+id); if(t) t.remove(); }, 4000);
+}
+
+// ── TAB SYSTEM ────────────────────────────────────────────────
+function showTab(tab) {
+  document.querySelectorAll('.shell-nav-item').forEach(n => n.classList.remove('active'));
+  event.target.classList.add('active');
+  const msgs = {
+    travel: ['Opening Concur Travel','Connecting to airline and hotel inventory...'],
+    expense: ['Opening Concur Expense','Loading your expense reports...'],
+    invoice: ['Opening Concur Invoice','Loading invoice management...'],
+    requests: ['Opening Travel Requests','Loading pending and approved requests...'],
+    reporting: ['Opening Reporting','Loading SAP Analytics Cloud integration...'],
+  };
+  if (msgs[tab]) toast(msgs[tab][0], msgs[tab][1], 'info');
+}
+
+function switchCtx(id, page) {
+  document.querySelectorAll(`#ctx-bar-${page} .ctx-tab`).forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  const msgs = {
+    mytrips: 'Loading your confirmed and upcoming trips...',
+    reports: 'Loading all expense reports...',
+    alerts: 'Loading policy alerts and notifications...',
+  };
+  if (msgs[id]) toast('Concur', msgs[id], 'info');
+}
+
+// ── CHIP INTERACTION ─────────────────────────────────────────
+document.querySelectorAll('.page-tab').forEach(tab => {
+  tab.addEventListener('click', function () {
+    this.closest('.page-tabs').querySelectorAll('.page-tab').forEach(t => t.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+// Welcome greeting
+window.addEventListener('load', () => {
+  setTimeout(() => toast('Welcome to SAP Concur','Good morning, Eng. Al-Rashidi! You have 2 reports pending approval.','info'), 800);
+});
+</script>
+</body>
+</html>

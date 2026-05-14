@@ -1120,6 +1120,16 @@ body {
 canvas { cursor: pointer; }
 canvas:active { cursor: crosshair; }
 
+
+
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #CCC; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #AAA; }
+
+/* ── ICONS SVG helpers ─────────────────────────────────── */
+.icon { width: 16px; height: 16px; display: inline-block; vertical-align: middle; }
 </style>
 
 </head>
@@ -1466,7 +1476,7 @@ canvas:active { cursor: crosshair; }
           </div>
 
           <!-- SAP Concur -->
-          <div class="fiori-tile" data-cat="sap" onclick="showToast('info','Concur','Opening SAP Concur travel and expense...')">
+          <div class="fiori-tile" data-cat="sap" onclick="window.open('SAP_Concur.html','_blank')">
             <div style="position:absolute;top:0;left:0;right:0;height:4px;background:#7c3aed;border-radius:14px 14px 0 0"></div>
             <div class="t-icon" style="background:#f5f3ff"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21 4 19 2c-2-2-4-2-5.5-.5L10 5 1.8 6.2a.5.5 0 0 0-.3.8l1.9 2.1 2.5-.5 3.2 3.2-.5 2.5 2.1 1.9a.5.5 0 0 0 .8-.3z"/></svg></div>
             <div class="t-title">SAP Concur</div>
@@ -1712,6 +1722,8 @@ canvas:active { cursor: crosshair; }
   </div><!-- /main grid -->
 </div><!-- /homepage content -->
 </div><!-- /tab-home -->
+
+
 
 <!-- ─── DASHBOARD TAB ──────────────────────────────────────────────────── -->
 <div id="tab-dashboard" class="tab-content">
@@ -3525,6 +3537,13 @@ function switchTab(id, el) {
   if(el) el.classList.add('active');
   // Init charts for new tab
   setTimeout(() => initTabCharts(id), 100);
+  // Concur tab welcome on first activation
+  if (id === 'concur' && !window._concurOpened) {
+    window._concurOpened = true;
+    setTimeout(() => {
+      if (typeof showToast === 'function') showToast('info', 'SAP Concur', 'Travel & Expense loaded — Good morning, Eng. Al-Rashidi!');
+    }, 300);
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -4697,6 +4716,9 @@ setInterval(() => {
   if(el) el.textContent = vals[Math.floor(Math.random()*vals.length)];
 }, 30000);
 </script>
+
+
+<!-- Concur functions removed -->
 
 <script id="joule-icon-inject">
 (function() {
