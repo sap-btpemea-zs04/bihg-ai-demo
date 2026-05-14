@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
-  <title>BIHG — SAP S/4HANA Autonomous Enterprise Platform v1778716379</title>
+  <title>BIHG — SAP S/4HANA Autonomous Enterprise Platform</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Tajawal:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
@@ -534,152 +534,273 @@ body {
 /* ══════════════════════════════════════════════════
    JOULE CHATBOT PANEL
    ══════════════════════════════════════════════════ */
+/* ══ JOULE — Real SAP Joule UI Theme ══ */
 .joule-overlay {
   display: none;
   position: fixed;
   inset: 0;
   z-index: 1000;
-  background: rgba(0,0,0,0.45);
-  backdrop-filter: blur(6px);
-  animation: fadeIn var(--t) var(--ease);
+  background: transparent;
+  pointer-events: none;
 }
 .joule-overlay.open { display: block; }
 
 .joule-panel {
   position: fixed;
-  right: 0; top: 0; bottom: 0;
-  width: 460px;
-  background: var(--white);
-  box-shadow: -12px 0 60px rgba(0,0,0,0.2);
+  right: 24px;
+  bottom: 24px;
+  top: auto;
+  width: 400px;
+  height: 680px;
+  max-height: calc(100vh - 100px);
+  background: #FFFFFF;
+  box-shadow: 0 8px 48px rgba(79,49,170,0.22), 0 2px 16px rgba(0,0,0,0.14);
   display: flex;
   flex-direction: column;
   z-index: 1001;
-  animation: slideIn var(--t-slow) var(--ease-out);
+  border-radius: 20px;
+  overflow: hidden;
+  animation: joulePopIn var(--t-slow) var(--ease-out);
+}
+@keyframes joulePopIn {
+  from { transform: scale(0.92) translateY(20px); opacity: 0; }
+  to   { transform: scale(1)    translateY(0);    opacity: 1; }
 }
 @keyframes slideIn { from{transform:translateX(100%)} to{transform:translateX(0)} }
 
+/* ── Joule Header — deep purple gradient exactly matching screenshot ── */
 .joule-header {
-  background: linear-gradient(135deg, var(--green-deep) 0%, var(--green-mid) 40%, var(--green) 80%, #007840 100%);
+  background: linear-gradient(175deg, #4F31AA 0%, #5B35C2 25%, #6D28D9 55%, #7C3AED 80%, #8B5CF6 100%);
   color: white;
-  padding: 20px 22px 17px;
+  padding: 18px 20px 16px;
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   position: relative;
-  overflow: hidden;
+  flex-shrink: 0;
+  min-height: 52px;
 }
 .joule-header::before {
   content: '';
   position: absolute;
-  top: 0; right: 0; bottom: 0; width: 50%;
-  background: radial-gradient(ellipse at right center, rgba(184,146,42,0.15), transparent 70%);
+  inset: 0;
+  background: radial-gradient(ellipse at 20% 50%, rgba(255,255,255,0.06) 0%, transparent 60%);
   pointer-events: none;
 }
-.joule-header::after {
+
+/* ── Joule hero section (purple gradient body) ── */
+.joule-hero {
+  background: linear-gradient(175deg, #4F31AA 0%, #5B35C2 20%, #6D28D9 50%, #7C3AED 75%, #8B5CF6 100%);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: 0 24px 28px;
+  padding-top: 0;
+  min-height: 240px;
+  position: relative;
+  overflow: hidden;
+}
+.joule-hero::before {
   content: '';
   position: absolute;
-  bottom: 0; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(184,146,42,0.6), transparent);
+  inset: 0;
+  background: radial-gradient(ellipse at 30% 40%, rgba(167,139,250,0.18) 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 10%, rgba(196,181,253,0.12) 0%, transparent 50%);
+  pointer-events: none;
 }
+.joule-diamond-wrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 24px 0 20px;
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+}
+/* The diamond gem icon — exact shape from screenshot */
+.joule-diamond-svg {
+  width: 88px;
+  height: 88px;
+  filter: drop-shadow(0 4px 24px rgba(167,139,250,0.5));
+  animation: jouleFloat 3s ease-in-out infinite;
+}
+@keyframes jouleFloat {
+  0%,100% { transform: translateY(0px); }
+  50%      { transform: translateY(-6px); }
+}
+.joule-hello { font-size: 17px; font-weight: 300; color: rgba(255,255,255,0.88); margin-bottom: 4px; position: relative; z-index: 1; }
+.joule-tagline { font-size: 26px; font-weight: 700; color: white; line-height: 1.25; letter-spacing: -0.5px; margin-bottom: 20px; position: relative; z-index: 1; }
+.joule-talk-btn {
+  background: white;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 22px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #4F31AA;
+  cursor: pointer;
+  transition: all 0.18s;
+  font-family: inherit;
+  position: relative;
+  z-index: 1;
+}
+.joule-talk-btn:hover { background: #EDE9FE; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,0.15); }
 
-.joule-diamond { width: 46px; height: 46px; display: flex; align-items: center; justify-content: center; }
+.joule-diamond { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 
+/* ── Messages area ── */
 .joule-messages {
   flex: 1;
   overflow-y: auto;
-  padding: 20px;
+  padding: 20px 20px 8px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  background: #f8fafa;
+  gap: 12px;
+  background: #F8F7FC;
 }
+.joule-messages::-webkit-scrollbar { width: 4px; }
+.joule-messages::-webkit-scrollbar-thumb { background: #DDD6FE; border-radius: 2px; }
 
 .msg {
   max-width: 88%;
-  padding: 12px 16px;
-  border-radius: 14px;
+  padding: 11px 15px;
+  border-radius: 16px;
   font-size: 12.5px;
   line-height: 1.65;
 }
 .msg-ai {
   background: white;
-  border: 1px solid var(--border);
+  border: 1px solid #EDE9FE;
   border-bottom-left-radius: 4px;
   align-self: flex-start;
-  box-shadow: var(--shadow-xs);
+  box-shadow: 0 1px 4px rgba(109,40,217,0.08);
+  color: #1F1235;
 }
 .msg-user {
-  background: linear-gradient(135deg, var(--green-mid), var(--green));
+  background: linear-gradient(135deg, #6D28D9, #7C3AED);
   color: white;
   border-bottom-right-radius: 4px;
   align-self: flex-end;
-  box-shadow: 0 2px 12px rgba(0,108,53,0.3);
+  box-shadow: 0 2px 12px rgba(109,40,217,0.35);
 }
 
+/* ── Quick action chips ── */
 .joule-quick-actions {
-  padding: 12px 16px;
+  padding: 10px 16px 8px;
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  border-top: 1px solid var(--border);
-  background: white;
+  border-top: 1px solid #EDE9FE;
+  background: #FDFCFF;
 }
 .quick-chip {
-  background: rgba(0,108,53,0.07);
-  border: 1px solid rgba(0,108,53,0.18);
-  color: var(--green);
+  background: #F5F3FF;
+  border: 1px solid #DDD6FE;
+  color: #5B21B6;
   padding: 5px 12px;
   border-radius: 20px;
   font-size: 11px;
   font-weight: 600;
   cursor: pointer;
-  transition: all var(--t-fast) var(--ease);
+  transition: all 0.15s;
 }
-.quick-chip:hover { background: var(--green); color: white; border-color: var(--green); transform: translateY(-1px); }
+.quick-chip:hover { background: #6D28D9; color: white; border-color: #6D28D9; transform: translateY(-1px); box-shadow: 0 2px 8px rgba(109,40,217,0.3); }
 
+/* ── Input area ── */
 .joule-input-area {
-  padding: 14px 16px;
-  border-top: 1px solid var(--border);
-  display: flex;
-  gap: 10px;
-  align-items: flex-end;
+  padding: 12px 14px 14px;
+  border-top: 1px solid #EDE9FE;
   background: white;
+  flex-shrink: 0;
+}
+.joule-input-box {
+  border: 2px solid #7C3AED;
+  border-radius: 16px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: white;
+  transition: box-shadow 0.15s;
+}
+.joule-input-box:focus-within {
+  box-shadow: 0 0 0 3px rgba(124,58,237,0.12);
 }
 .joule-input {
-  flex: 1;
-  border: 1.5px solid var(--border);
-  border-radius: 10px;
-  padding: 10px 14px;
-  font-family: 'Inter', sans-serif;
-  font-size: 12.5px;
-  resize: none;
-  outline: none;
-  transition: border-color var(--t-fast) var(--ease);
-  height: 44px;
-  max-height: 120px;
-  overflow-y: auto;
-  background: var(--surface);
-}
-.joule-input:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(0,108,53,0.1); background: white; }
-.joule-send {
-  background: linear-gradient(135deg, var(--green), var(--green-light));
-  color: white;
   border: none;
-  border-radius: 10px;
-  width: 44px; height: 44px;
-  cursor: pointer;
+  outline: none;
+  font-family: inherit;
+  font-size: 13px;
+  color: #1F1235;
+  resize: none;
+  width: 100%;
+  line-height: 1.5;
+  background: transparent;
+  height: 20px;
+  max-height: 80px;
+  overflow-y: auto;
+}
+.joule-input::placeholder { color: #A78BFA; font-style: italic; }
+.joule-input-footer {
   display: flex;
   align-items: center;
-  justify-content: center;
-  transition: all var(--t) var(--ease-spring);
-  box-shadow: 0 2px 10px rgba(0,108,53,0.3);
-  font-size: 16px;
+  justify-content: space-between;
 }
-.joule-send:hover { transform: scale(1.08); box-shadow: 0 4px 16px rgba(0,108,53,0.45); }
+.joule-add-btn {
+  width: 28px; height: 28px;
+  border: none; background: transparent;
+  font-size: 20px; color: #7C3AED;
+  cursor: pointer; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 8px; transition: background 0.15s;
+  font-weight: 300;
+}
+.joule-add-btn:hover { background: #F5F3FF; }
+.joule-send {
+  width: 36px; height: 36px;
+  background: #7C3AED;
+  border: none; border-radius: 50%;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.18s;
+  box-shadow: 0 2px 8px rgba(124,58,237,0.4);
+  flex-shrink: 0;
+}
+.joule-send:hover { background: #6D28D9; transform: scale(1.08); box-shadow: 0 4px 14px rgba(109,40,217,0.5); }
+.joule-send svg { width: 16px; height: 16px; }
+.joule-disclaimer {
+  text-align: center;
+  font-size: 11px;
+  color: #A78BFA;
+  padding: 6px 0 2px;
+}
 
-/* ══════════════════════════════════════════════════
-   MODAL
-   ══════════════════════════════════════════════════ */
+/* ── Header controls ── */
+.joule-header-title { font-size: 15px; font-weight: 700; color: white; letter-spacing: -0.1px; }
+.joule-header-controls { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.joule-ctrl-btn {
+  width: 30px; height: 30px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+}
+.joule-ctrl-btn:hover { background: rgba(255,255,255,0.22); }
+.joule-ctrl-btn svg { width: 14px; height: 14px; }
+
+/* ── Typing indicator ── */
+.typing { display: flex; align-items: center; gap: 4px; padding: 10px 14px; background: white; border: 1px solid #EDE9FE; border-radius: 16px; border-bottom-left-radius: 4px; align-self: flex-start; }
+.typing span { width: 6px; height: 6px; border-radius: 50%; background: #7C3AED; animation: typing 1.2s infinite; }
+.typing span:nth-child(2) { animation-delay: 0.2s; }
+.typing span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typing { 0%,100%{transform:translateY(0);opacity:0.4} 50%{transform:translateY(-5px);opacity:1} }
+
+
 .modal-overlay {
   display: none;
   position: fixed;
@@ -3322,7 +3443,7 @@ canvas:active { cursor: crosshair; }
         <div style="font-size:13px;font-weight:800;color:white;font-family:Tajawal,Inter,sans-serif;letter-spacing:0.2px;">Binladin International Holding Group</div>
         <div style="font-size:10px;color:rgba(255,255,255,0.55);letter-spacing:1.8px;text-transform:uppercase;">SAP S/4HANA · Autonomous Enterprise</div>
         <div style="font-size:11px;color:rgba(255,255,255,0.5);line-height:1.65;margin-top:4px;max-width:280px;">
-          Powering KSA's most iconic construction portfolio with AI-driven enterprise intelligence — SAR 450B+ of mega projects managed in real time.
+          Powering KSA's most iconic construction portfolio with AI-driven enterprise intelligence
         </div>
         <div style="display:flex;gap:10px;margin-top:6px;">
           <div style="padding:5px 12px;background:rgba(212,168,67,0.15);border:1px solid rgba(212,168,67,0.35);border-radius:20px;font-size:10px;font-weight:700;color:rgba(212,168,67,0.9);letter-spacing:0.5px;">Vision 2030 Partner</div>
@@ -3400,21 +3521,57 @@ canvas:active { cursor: crosshair; }
 <!-- ═══ JOULE CHATBOT ══════════════════════════════════════════════════════ -->
 <div class="joule-overlay" id="joule-overlay" onclick="closeJouleOnOverlay(event)"></div>
 <div class="joule-panel" id="joule-panel">
+
+  <!-- ── Header bar: exact Joule UI ── -->
   <div class="joule-header">
-    <div class="joule-diamond">
-      <img src="JOULE_ICON_PLACEHOLDER" alt="Joule" style="width:46px;height:46px;display:block;" />
-    </div>
-    <div>
-      <div style="font-size:16px;font-weight:800;">SAP Joule</div>
-      <div style="font-size:11px;opacity:0.8;">Generative AI · Autonomousic Automation</div>
-    </div>
-    <div style="margin-left:auto;display:flex;gap:8px;">
-      <button class="header-btn" style="padding:5px 10px;font-size:11px;" onclick="clearChat()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg> Clear</button>
-      <button onclick="closeJoule()" style="background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.4);color:white;border-radius:8px;padding:6px 14px;font-size:13px;font-weight:700;cursor:pointer;transition:background 0.2s;font-family:Montserrat,sans-serif;display:flex;align-items:center;gap:5px;" onmouseover="this.style.background='rgba(255,255,255,0.35)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">✕ Close</button>
+    <button class="joule-ctrl-btn" onclick="void(0)" title="Menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <span class="joule-header-title">Joule</span>
+    <div class="joule-header-controls">
+      <button class="joule-ctrl-btn" onclick="clearChat()" title="Clear chat">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+      </button>
+      <button class="joule-ctrl-btn" onclick="void(0)" title="Expand">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+      </button>
+      <button class="joule-ctrl-btn" onclick="closeJoule()" title="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
   </div>
 
-  <div class="joule-messages" id="joule-messages">
+  <!-- ── Purple hero section (visible on open, hides after first chat) ── -->
+  <div class="joule-hero" id="joule-hero">
+    <!-- Diamond gem icon — exact match to screenshot -->
+    <div class="joule-diamond-wrap">
+      <svg class="joule-diamond-svg" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Sparkle top-left -->
+        <path d="M28 18 L30 12 L32 18 L38 20 L32 22 L30 28 L28 22 L22 20 Z" fill="rgba(196,181,253,0.7)"/>
+        <!-- Sparkle top-right -->
+        <path d="M88 28 L90 23 L92 28 L97 30 L92 32 L90 37 L88 32 L83 30 Z" fill="rgba(196,181,253,0.5)"/>
+        <!-- Sparkle top-center -->
+        <path d="M58 10 L60 5 L62 10 L67 12 L62 14 L60 19 L58 14 L53 12 Z" fill="rgba(216,180,254,0.8)"/>
+        <!-- Diamond body -->
+        <path d="M38 42 L60 38 L82 42 L94 58 L60 88 L26 58 Z" fill="white" opacity="0.95"/>
+        <!-- Diamond facets -->
+        <path d="M38 42 L60 38 L82 42 L60 54 Z" fill="rgba(167,139,250,0.3)"/>
+        <path d="M60 54 L26 58 L38 42 Z" fill="rgba(139,92,246,0.15)"/>
+        <path d="M60 54 L82 42 L94 58 Z" fill="rgba(109,40,217,0.15)"/>
+        <path d="M60 54 L26 58 L60 88 Z" fill="rgba(124,58,237,0.1)"/>
+        <path d="M60 54 L94 58 L60 88 Z" fill="rgba(109,40,217,0.12)"/>
+        <!-- Inner sparkle -->
+        <path d="M56 60 L60 52 L64 60 L72 64 L64 68 L60 76 L56 68 L48 64 Z" fill="rgba(139,92,246,0.6)"/>
+      </svg>
+    </div>
+
+    <div class="joule-hello">Hello, Eng. Al-Rashidi,</div>
+    <div class="joule-tagline">How can I help you?</div>
+    <button class="joule-talk-btn" onclick="document.getElementById('joule-input').focus()">Talk to me naturally.</button>
+  </div>
+
+  <!-- ── Messages (hidden until first message sent) ── -->
+  <div class="joule-messages" id="joule-messages" style="display:none;">
     <div class="msg msg-ai">
       <strong>Marhaba! أهلاً وسهلاً 👋</strong><br><br>
       I'm <strong>SAP Joule</strong>, your AI assistant for Saudi Binladin Group's intelligent enterprise platform. I have real-time access to all your SAP systems — Projects, Finance, Procurement, HR, and Assets.<br><br>
@@ -3422,8 +3579,9 @@ canvas:active { cursor: crosshair; }
     </div>
   </div>
 
+  <!-- ── Quick action chips ── -->
   <div class="joule-quick-actions">
-    <div class="quick-chip" onclick="sendJouleMessage('Show me today\\'s critical risks')">🔴 Critical Risks</div>
+    <div class="quick-chip" onclick="sendJouleMessage('Show me today\'s critical risks')">🔴 Critical Risks</div>
     <div class="quick-chip" onclick="sendJouleMessage('What projects are behind schedule?')">📅 Delayed Projects</div>
     <div class="quick-chip" onclick="sendJouleMessage('Analyze budget variance for Masjid al-Haram expansion')">💰 Budget Analysis</div>
     <div class="quick-chip" onclick="sendJouleMessage('Generate executive briefing for today')">📋 Executive Brief</div>
@@ -3431,10 +3589,26 @@ canvas:active { cursor: crosshair; }
     <div class="quick-chip" onclick="sendJouleMessage('Predict Q4 2025 revenue')">🔮 Forecast</div>
   </div>
 
+  <!-- ── Input area: exact Joule UI ── -->
   <div class="joule-input-area">
-    <textarea class="joule-input" id="joule-input" placeholder="Ask Joule anything about SBG operations..." onkeydown="jouleKeyDown(event)" rows="1"></textarea>
-    <button class="joule-send" onclick="sendJouleMessage()">➤</button>
+    <div class="joule-input-box">
+      <textarea class="joule-input" id="joule-input"
+        placeholder="Message Joule..."
+        onkeydown="jouleKeyDown(event)"
+        oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,80)+'px'"
+        rows="1"></textarea>
+      <div class="joule-input-footer">
+        <button class="joule-add-btn" onclick="void(0)" title="Attach">+</button>
+        <button class="joule-send" onclick="sendJouleMessage()" title="Send">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="joule-disclaimer">Joule uses AI. Verify results.</div>
   </div>
+
 </div>
 
 <!-- ═══ MODAL ══════════════════════════════════════════════════════════════ -->
@@ -4111,6 +4285,11 @@ function jouleKeyDown(e) {
 }
 
 function clearChat() {
+  // Restore hero panel on clear
+  const hero = document.getElementById('joule-hero');
+  const msgs = document.getElementById('joule-messages');
+  if (hero) hero.style.display = 'flex';
+  if (msgs) msgs.style.display = 'none';
   const container = document.getElementById('joule-messages');
   container.innerHTML = '<div class="msg msg-ai"><strong>Chat cleared.</strong> How can I help you?</div>';
 }
@@ -4121,7 +4300,13 @@ async function sendJouleMessage(preset) {
   const text = preset || input.value.trim();
   if(!text) return;
 
+  // Hide hero, show messages on first interaction
+  const jouleHero = document.getElementById('joule-hero');
   const container = document.getElementById('joule-messages');
+  if (jouleHero && jouleHero.style.display !== 'none') {
+    jouleHero.style.display = 'none';
+    container.style.display = 'flex';
+  }
 
   // Add user message
   const userMsg = document.createElement('div');
